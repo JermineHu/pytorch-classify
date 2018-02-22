@@ -1,0 +1,41 @@
+branches:
+  include: [ master, dev ]
+  exclude: [ develop, feature/* ]
+clone:
+  git:
+    image: plugins/git
+    depth: 50
+    recursive: true
+workspace:
+  base: /home
+  path: /pytorch_demo
+debug: true
+pipeline:
+  publish:
+      image: plugins/docker
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - /etc/resolv.conf:/etc/resolv.conf
+      tags: "${DRONE_COMMIT_SHA:0:8}"
+      registry: xxxx
+      repo: xxx/yscz/pytorch_demo
+      secrets: [ docker_username, docker_password ]
+      dockerfile: Dockerfile
+      auto_tag: true
+      mirror: http://a2efa943.m.daocloud.io
+      when:
+        branch: master
+        event: push
+#  slack:
+#      image: plugins/slack
+#      channel: dev
+#      when:
+#        status: [ success, failure ]
+#services:
+#  postgres:
+#    image: postgres:9.4.5
+#    environment:
+#      - POSTGRES_USER=postgres
+#      - POSTGRES_DB=test
+#  cache:
+#    image: redis
